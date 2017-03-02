@@ -1,0 +1,11 @@
+#!/bin/bash
+res=`find * |grep json |grep -v sw`
+
+for file in $res
+do
+echo $file
+cat $file | python -m simplejson.tool
+echo 
+echo
+done
+

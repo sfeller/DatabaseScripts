@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=MAKE VTOUR (MULTIRES) droplet
+Exec="/home/ubuntu/krpano/krpanotools" makepano -config=templates/vtour-multires.config %F
+Path=/home/ubuntu/krpano/
+Icon=/home/ubuntu/krpano/.makepanoicon
+Terminal=true
+Type=Application
+Categories=Application;Graphics;
+StartupNotify=false

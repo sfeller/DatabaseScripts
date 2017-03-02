@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=ENCRYPT XML droplet
+Exec="/home/ubuntu/krpano/krpanotools" encrypt -h5 -z %F
+Path=/home/ubuntu/krpano/
+Icon=/home/ubuntu/krpano/.encrypticon
+Terminal=true
+Type=Application
+Categories=Application;Graphics;
+StartupNotify=false

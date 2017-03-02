@@ -1,0 +1,401 @@
+{
+  "components": {
+    "01": {
+      "010002": {
+        "01000200": {
+          "Description": "", 
+          "Name": "AWARE2", 
+          "Original Name": "", 
+          "id": "01000200"
+        }, 
+        "Name": "AWARE2", 
+        "id": "010002"
+      }, 
+      "010010": {
+        "01001000": {
+          "Build Date": "13xxxx", 
+          "Description": "Prototype AWARE 10 camera", 
+          "Name": "AWARE10", 
+          "PN": "01001000", 
+          "Parts": {
+            "PN": "MacroOptic"
+          }, 
+          "SN": {
+            "00000001": {
+              "Build Date": "20130115", 
+              "PN": "01001000", 
+              "SN": "00000001", 
+              "components": {
+                "SN": "00000001"
+              }, 
+              "holemap": {
+                "1": "30000100_00000011", 
+                "2": "30000100_00000021", 
+                "3": "30000100_00000007"
+              }, 
+              "id": "01001000_00000001", 
+              "validation": {}
+            }, 
+            "Description": "Built AWARE10 Systems", 
+            "id": "01001000_SN"
+          }, 
+          "designDocs": {}, 
+          "id": "01001000", 
+          "validation": {}
+        }, 
+        "Name": "AWARE 10", 
+        "id": "010010"
+      }, 
+      "id": "01", 
+      "name": "Imaging Systems"
+    }, 
+    "02": {}, 
+    "03": {}, 
+    "10": {
+      "0001": {}, 
+      "id": "10", 
+      "name": "Microcameras"
+    }, 
+    "11": {
+      "110001": {}, 
+      "110002": {}, 
+      "110003": {}, 
+      "110004": {}, 
+      "110005": {}, 
+      "110006": {}, 
+      "110007": {}, 
+      "110008": {}, 
+      "id": "11", 
+      "name": "Micro-mechanical components"
+    }, 
+    "12": {
+      "120001": {
+        "12000100": {
+          "Description": "", 
+          "Name": "AW10-R3-L1-MOLD", 
+          "Original Name": "", 
+          "id": "12000100"
+        }, 
+        "Name": "AW10-L1-MOLD", 
+        "id": "120001"
+      }, 
+      "120002": {
+        "12000200": {
+          "Description": "", 
+          "Name": "AW10-R3-L2-MOLD", 
+          "Original Name": "", 
+          "id": "12000200"
+        }, 
+        "Description": "", 
+        "Name": "AW10-L2-MOLD", 
+        "Original Name": "", 
+        "id": "120002"
+      }, 
+      "120003": {
+        "120003": {}, 
+        "Description": "", 
+        "Name": "AW10-L3-MOLD", 
+        "Original Name": "", 
+        "id": "120003"
+      }, 
+      "120004": {
+        "12000400": {}, 
+        "Description": "", 
+        "Name": "AW10-L4-MOLD", 
+        "Original Name": "", 
+        "id": "120004"
+      }, 
+      "120005": {
+        "12000500": {}, 
+        "Description": "", 
+        "Name": "AW10-L5-MOLD", 
+        "Original Name": "", 
+        "id": "120005"
+      }, 
+      "120006": {
+        "12000600": {
+          "Description": "", 
+          "Name": "AW10-R3-L6-MOLD", 
+          "Original Name": "", 
+          "id": "12000600"
+        }, 
+        "Description": "", 
+        "Name": "AW10-L6-MOLD", 
+        "Original Name": "", 
+        "id": "120006"
+      }, 
+      "id": "12", 
+      "name": "micro lenses"
+    }, 
+    "13": {
+      "130001": {}, 
+      "id": "13", 
+      "name": "Micro filters"
+    }, 
+    "20": {
+      "200001": {}, 
+      "id": "20", 
+      "name": "Sensor Modules"
+    }, 
+    "21": {
+      "210001": {
+        "21000100": {
+          "Description": "Baseboard for sensor module", 
+          "Name": "Baseboard", 
+          "Original Name": "", 
+          "id": "21000100"
+        }, 
+        "Name": "Baseboard", 
+        "id": "210001"
+      }, 
+      "210002": {
+        "21000200": {
+          "Description": "Power Board for sensor module", 
+          "Name": "Power Board", 
+          "Original Name": "", 
+          "id": "21000200"
+        }, 
+        "Name": "Power Board", 
+        "id": "210002"
+      }, 
+      "210003": {
+        "21000300": {
+          "Description": "3CB for sensor module", 
+          "Name": "3CB", 
+          "Original Name": "", 
+          "id": "21000300"
+        }, 
+        "Name": "3CB", 
+        "id": "210003"
+      }, 
+      "210004": {
+        "21000400": {
+          "Description": "Flex Board for sensor module", 
+          "Name": "Flex board", 
+          "Original Name": "", 
+          "id": "21000400"
+        }, 
+        "Name": "Flex Board", 
+        "id": "210004"
+      }, 
+      "Name": "Sensor module components", 
+      "id": "21"
+    }, 
+    "30": {
+      "300001": {}, 
+      "id": "30", 
+      "name": "Microcameras"
+    }, 
+    "31": {
+      "310001": {
+        "31000100": {
+          "Description": "None", 
+          "Name": "Housing", 
+          "Original Name": "sensor_body_rev3", 
+          "id": "31000100", 
+          "type": "part"
+        }, 
+        "id": "310001"
+      }, 
+      "310002": {}, 
+      "310003": {}, 
+      "310004": {}, 
+      "310005": {}, 
+      "310006": {}, 
+      "id": "31", 
+      "name": "Microcamera components"
+    }, 
+    "32": {
+      "id": "32", 
+      "name": "Microcamera integration components"
+    }, 
+    "40": {
+      "400001": {
+        "40000100": {
+          "Description": "G1 control module", 
+          "Name": "MCCM, G1", 
+          "Original Name": "", 
+          "id": "40000100"
+        }, 
+        "id": "400001", 
+        "name": "MCCM, G1"
+      }, 
+      "400002": {
+        "40000200": {
+          "Description": "G2 control module", 
+          "Name": "MCCM, G2", 
+          "Original Name": "", 
+          "id": "40000200"
+        }, 
+        "id": "400002", 
+        "name": "MCCM G2"
+      }, 
+      "400003": {
+        "40000300": {
+          "Description": "", 
+          "Name": "Backplane", 
+          "Original Name": "", 
+          "id": "40000300"
+        }, 
+        "id": "400003", 
+        "name": "Backplane"
+      }, 
+      "id": "40", 
+      "name": "Control module assemblies"
+    }, 
+    "41": {
+      "410001": {
+        "41000100": {
+          "Description": "", 
+          "Name": "Baseboard, G1", 
+          "Original Name": "", 
+          "id": "41000100"
+        }, 
+        "id": "410001", 
+        "name": "Baseboard, G1"
+      }, 
+      "410002": {
+        "41000200": {
+          "Description": "", 
+          "Name": "Expansion board, G1", 
+          "Original Name": "", 
+          "id": "41000200"
+        }, 
+        "id": "410002", 
+        "name": "Expansion Board, G1"
+      }, 
+      "410003": {
+        "41000300": {
+          "Description": "", 
+          "Name": "Enclosure, Top G1", 
+          "Original Name": "", 
+          "id": "41000300"
+        }, 
+        "id": "410003", 
+        "name": "Enclosure, G1 Top"
+      }, 
+      "410004": {
+        "41000400": {
+          "Description": "", 
+          "Name": "Enclosure, Bottom G1", 
+          "Original Name": "", 
+          "id": "41000400"
+        }, 
+        "id": "410004", 
+        "name": "Enclosure, G1 Bottom"
+      }, 
+      "410005": {
+        "41000500": {
+          "Description": "", 
+          "Name": "Baseboard, G2", 
+          "Original Name": "", 
+          "id": "41000500"
+        }, 
+        "id": "410005", 
+        "name": "Base board, G2"
+      }, 
+      "410006": {
+        "41000600": {
+          "Description": "", 
+          "Name": "Baseboard, Backplane", 
+          "Original Name": "", 
+          "id": "41000600"
+        }, 
+        "id": "410006", 
+        "name": "Base board, Backplane"
+      }, 
+      "id": "41"
+    }, 
+    "42": {
+      "420001": {}, 
+      "id": "42", 
+      "name": "Daughterboard Components"
+    }, 
+    "50": {
+      "id": "50", 
+      "name": "Macro-optic Assemblies"
+    }, 
+    "51": {
+      "510001": {
+        "51000100": {
+          "Description": "AWARE 10 Dome", 
+          "Name": "Dome, A10", 
+          "Original Name": "Dome_AWARE10_low_profile-r1", 
+          "id": "51000100"
+        }, 
+        "Name": "Dome, A10", 
+        "id": "510001"
+      }, 
+      "510002": {
+        "51000200": {
+          "Description": "", 
+          "Name": "Faceplate, A10", 
+          "Original Name": "static_faceplate_low_profile_r1", 
+          "id": "51000200"
+        }, 
+        "Name": "Faceplate, A10", 
+        "id": "510002"
+      }, 
+      "510003": {
+        "51000300": {}, 
+        "Name": "Bolt, Faceplate", 
+        "id": "510003"
+      }, 
+      "510004": {
+        "51000400": {
+          "Description": "", 
+          "Name": "Bolt, Gigagon", 
+          "Original Name": "", 
+          "id": "51000400"
+        }, 
+        "Name": "Bolt, Gigagon", 
+        "id": "510004"
+      }, 
+      "id": "51", 
+      "name": "Macro-optic mechanical"
+    }, 
+    "52": {
+      "520001": {
+        "52000100": {
+          "Description": "", 
+          "Name": "Gigagon, A10", 
+          "Original Name": "", 
+          "id": "52000100"
+        }, 
+        "Name": "Gigagon, A10", 
+        "id": "520001"
+      }, 
+      "id": "52", 
+      "name": "Macro-optics"
+    }, 
+    "60": {
+      "id": "60", 
+      "name": "Enclosures"
+    }, 
+    "61": {
+      "id": "61", 
+      "name": "Power Electronics"
+    }, 
+    "62": {
+      "id": "62", 
+      "name": "Communications components"
+    }, 
+    "70": {
+      "id": "70", 
+      "name": "Rendering System"
+    }, 
+    "80": {
+      "id": "80", 
+      "name": "Custom equipment"
+    }, 
+    "90": {
+      "id": "90", 
+      "name": "Documentation"
+    }, 
+    "id": "components.json", 
+    "test": "test2"
+  }, 
+  "date": "2012-11-19", 
+  "id": "20121119161133788067", 
+  "time": "16:11.33"
+}

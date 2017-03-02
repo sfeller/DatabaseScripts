@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=krpano Tools
+Exec="/home/ubuntu/krpano/krpano Tools.sh" %F
+Icon=/home/ubuntu/krpano/.krpanotoolsicon
+Terminal=false
+Type=Application
+Categories=Application;Graphics;
+StartupNotify=false

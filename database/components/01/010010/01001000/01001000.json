@@ -1,0 +1,13 @@
+{
+  "id":"01001000",
+  "PN":"01001000",
+  "Name":"AWARE10",
+  "Description":"Prototype AWARE 10 camera",
+  "Build Date":"13xxxx",
+  "Parts":
+  {
+    "PN":"gigagon",
+    "PN":"Enclosure",
+    "PN":"MacroOptic"
+  } 
+}

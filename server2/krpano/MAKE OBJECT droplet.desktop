@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=MAKE OBJECT droplet
+Exec="/home/ubuntu/krpano/krpanotools" makepano -config=templates/object.config %F
+Path=/home/ubuntu/krpano/
+Icon=/home/ubuntu/krpano/.makepanoicon
+Terminal=true
+Type=Application
+Categories=Application;Graphics;
+StartupNotify=false

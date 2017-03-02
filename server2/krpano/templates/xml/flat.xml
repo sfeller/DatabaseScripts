@@ -1,0 +1,32 @@
+<krpano version="1.17" bgcolor="0x000000">
+
+	<!-- the skin -->
+	<include url="http://s3.amazonaws.com/aqueti.data/web-home/css/skin/defaultskin.xml" />
+
+	<!-- view settings -->
+	<view fovtype="HFOV" fov="1.0" fovmax="1.0" maxpixelzoom="2.0" limitview="lookat" />
+
+	<!-- control settings (drag2d for flat pano) -->
+	<control mousetype="drag2d" touchtype="drag2d" zoomtocursor="true" zoomoutcursor="true" bouncinglimits="true" keycodesin="16" keycodesout="17" />
+	
+	<!-- events and actions for adjusting the view settings to see the whole image -->
+	<events name="flatpano_events" onnewpano="flatpano_imagefit();" onresize="flatpano_imagefit();" />
+
+	<action name="flatpano_imagefit">
+		if(image.vfov GT 0,
+			div(aspectratio, stagewidth, stageheight);
+			if(aspectratio GE 1,
+				if(image.vfov GE image.hfov, set(view.fovtype,VFOV), set(view.fovtype,HFOV));
+			  ,
+				if(image.vfov GE image.hfov, set(view.fovtype,HFOV), set(view.fovtype,VFOV));
+			  );
+		  );
+	</action>
+
+	<!-- preview pano image -->
+	[PREVIEW]
+
+	<!-- pano image -->
+	[IMAGE]
+
+</krpano>

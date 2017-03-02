@@ -1,0 +1,98 @@
+{
+   "version":"1.0",
+   "collections":
+   {
+      "composites":
+      {  
+         "type":"collection",
+         "data":
+         {
+            "id":{"type":"string"},
+            "title":{"type":"string"},
+            "keywords":{"type":"string","description":"keywords related to snapshot"},
+            "description":{"type":"string","description":"keywords related to snapshot"},
+            "preview":{"type":"url"},
+            "compositeDate":{"type":"string","format":"YYYYMMDD"},
+            "compositeTime":{"type":"string","format":"hh:mm.ss"}, 
+            "datasetId" : {"type":"string","auto":true}, 
+            "version":{"type":"string","auto":true},
+            "outputFiles":
+            {
+               "type":"dictionary",
+               "data":
+               {
+                  "krpano":{"type":"string"}
+               }
+            },
+            "eventId" : {"type":"string","description":"Id of event"},
+            "location":
+            {
+               "type":"dictionary",
+               "data":
+               {
+                  "longitude":{"type":"number"},
+                  "latitude":{"type":"number"},
+                  "elevation":{"type":"number"},
+                  "description":{"type":"string"},
+                  "azimuth":{"type":"number"},
+                  "altitude":{"type":"number"},
+                  "name":{"type":"string"},
+                  "address":{"type":"string"},
+                  "address2":{"type":"string"},
+                  "city":{"type":"string"},
+                  "state":{"type":"string"},
+                  "zip":{"type":"number"}
+               }
+            }
+         }
+      },
+      "albums":
+      {
+         "type":"collection",
+         "data":
+         {
+           "id":{"type":"string","auto":true},
+           "owner":{"type":"string","auto":true},
+           "date":{"type":"string","auto":true},
+           "time":{"type":"string","auto":true},
+           "title":{"type":"string"},
+           "preview":{"type":"url"},
+           "keywords":{"type":"string","description":"keywords related to snapshot"},
+           "defaultView":{"type":"string", "values":["horizontal","vertical"]},
+           "items":
+           {
+              "type":"array",
+              "data":
+              {
+                 "doctype":
+                 {
+                    "type":"select",
+                    "options":["composite","snapshot","album"],
+                    "description":"Type of component this is",
+                    "key":true
+                 },
+                 "id":{"type":"string","description":"Docment Id"}
+              }
+           }
+         }
+      },
+      "snapshots":
+      {
+         "type":"collection",
+         "data":
+         { 
+            "id":{"type":"string","auto":true},
+            "date":{"type":"string","auto":true},
+            "time":{"type":"string","auto":true},
+            "imageId":{"type":"string","description":"reference image id"},
+            "ath":{"type":"number","description":"image horizontal direction "},
+            "atv":{"type":"number","description":"image vertical direction"},
+            "fov":{"type":"number","description":"image fov"},
+            "description":{"type":"string","description":"Text description of the image"},
+            "keywords":{"type":"string","description":"keywords related to snapshot"}
+         }
+      }
+   }
+}
+
+

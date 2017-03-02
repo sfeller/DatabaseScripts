@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Convert SPHERE to CUBE droplet
+Exec="/home/ubuntu/krpano/krpanotools" sphere2cube -config=templates/convertdroplets.config %F
+Path=/home/ubuntu/krpano/
+Icon=/home/ubuntu/krpano/.converticon
+Terminal=true
+Type=Application
+Categories=Application;Graphics;
+StartupNotify=false

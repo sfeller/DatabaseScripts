@@ -1,0 +1,36 @@
+{
+  "access": {
+    "_comment": "Choices made by authorities, use (public|private), (yes|no)", 
+    "permission": "public", 
+    "webInclude": "no"
+  }, 
+  "compositingFiles": {
+    "_comment": "Files related to compositing; location relative to json file. Web shares (so far) for download: sift"
+  }, 
+  "microCameraImages": {
+    "_comment": "Creator identify any supporting source image forms. Paths should be relative to the location of the json file. amcdir: Aware MicroCamera images: please store in folder 'amc_images', to speed web search for tifs. Available for Web download (so far): zipFile, smallComposite, largeComposite", 
+    "amcDir": ""
+  }, 
+  "photographer": {
+    "_comment": "Filled out by anyone, typically the photographer. Quality=0 means unassessed.", 
+    "cameraLocation": "", 
+    "experiment": "", 
+    "microcameraImagesQuality1to5": "0", 
+    "photographer": "", 
+    "sectionReady": "no", 
+    "subject": "", 
+    "textAnnotation": "", 
+    "title": "BP27"
+  }, 
+  "snapshot": {
+    "_comment": "Ideally automatically set by snapshot program. snapMoment+cameraid make up unique image identifier at this time.", 
+    "cameraLocationCoordinates": "", 
+    "cameraOrientation": "", 
+    "microcameraImagesBasename": "mosaic_20120818_221604", 
+    "microcameraImagesFormat": "PGM", 
+    "microcameraImagesOriginalDestinationDir": "/home/mosaic/BP_08_18/BP27", 
+    "microcameraImagesOriginalDestinationHostname": "mc01a", 
+    "mosaicCameraId": "a2-2", 
+    "snapMoment": "20120818_221604"
+  }
+}

@@ -1,0 +1,48 @@
+sensorModule
+  - SN
+  - Part Number
+  - Focus Module SN
+  - Build Date
+  - 21-0002 Power Board
+  - 21-0001 Baseboard
+  - 21-0003 3CB
+  - 21-0004 Flex Board
+  - Process ID
+  - Inspector ID
+  - Comments
+  - Components
+  - Parts
+
+G1 (40-0001)
+  - 41-0001 Baseboard
+  - 41-0002 Expansion Board
+  - 41-0003 Enclosure, Top
+  - 41-0004 Enclosure, Bottom
+  - Build Date
+  - SN
+  - Inspector ID
+  - Comments
+  - Components
+  - Parts
+
+G2 (40-0002)
+  - 41-0005 Baseboard
+  - Build Date
+  - SN
+  - Inspector ID
+  - Comments
+  - Components
+  - Parts
+
+Backplane (40-0003)
+  - 41-0006 Baseboard
+  - Build Date
+  - SN
+  - Inspector ID
+  - Comments
+  - Components
+  - Parts
+
+Cluster
+  - Build Location 
+
