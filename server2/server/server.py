@@ -212,7 +212,8 @@ class AquetiNamespace(BaseNamespace):
    ##############################
    def on_getTemplate(self, data):
       template = AJSON.readJson(data["type"]+".json")
-      print("Template!!!!!"+str(template))
+#      print("Template:"+str(template))
+      print("Template: "+str(data["type"])+".json")
       self.emit("template", template["collections"][data["collection"]]["data"])
 
    ##############################
@@ -361,14 +362,14 @@ def main():
       print "MDB: Unable to connect to database: "+args.dbase
       return -1
 
-   if args.aws_access:
-      awsAccessKey = args.aws_access
+#   if args.aws_access:
+#      awsAccessKey = args.aws_access
 
-   if args.aws_secret:
-      awsSecretKey = arts.aws_secret
+#   if args.aws_secret:
+#      awsSecretKey = arts.aws_secret
 
-   if args.bucket:
-      awsBucket = args.bucket
+#   if args.bucket:
+#      awsBucket = args.bucket
 
    # Connect to AWS class
    #sdf - need to make this optional
@@ -383,7 +384,7 @@ def main():
 #      print "Unable to connect to AWS. Please check inputs"
 #      return -1
 
-   print "We're starting the server!"
+   print "Starting the server on port "+str(port)+"!"
    sio_server = SocketIOServer(
       ('', port ), chat, 
       policy_server=False)

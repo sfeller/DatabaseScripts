@@ -83,13 +83,13 @@ class MDB:
 
 
    #############################################
-   # Insert Document 
+   ## Insert document 
+   # @brief Inserts the document indicated by data into the specified collection
    #
-   # Inputs:
-   #   data - dictionary to be inserted in database 
-   #
-   # Returns:
-   #   rc - number of inserted documents
+   # @param self Pointer to this object
+   # @param collection name of the collection to inser thte document into
+   # @param data document to insert
+   # @return number of inserted documents
    #############################################
    def insert(self, collection, data):
       """Insert a document into the database """
@@ -100,14 +100,13 @@ class MDB:
       print("Data:"+str(data))
 
       try:
-         q = {"id":data["data"]["id"]}
+         q = {"id":data["id"]}
          print("Q:"+str(q))
       except:
          q = {}
 
       try :
-         coll.update(q, {"$set":data["data"]}, upsert=True)
-#         coll.insert(data)
+         coll.update(q, {"$set":data}, upsert=True)
       except:
          e = sys.exc_info()[0]
          print "Error: "+ str(e)

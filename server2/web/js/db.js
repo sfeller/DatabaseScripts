@@ -11,7 +11,8 @@ var Init; (Init = function Init ()
 {
    //Establish socket connection 
 //   socket = io.connect('http://spinoza2.disp.duke.edu:');
-   socket = io.connect('http://ec2-54-221-146-22.compute-1.amazonaws.com');
+   socket = io.connect('http://localhost:');
+//   socket = io.connect('http://ec2-54-221-146-22.compute-1.amazonaws.com');
 })()
 
 var db = 

@@ -51,7 +51,7 @@ import datetime
 #custom files
 import AJSON                                #JSON file interface functions
 import MDB                                  #mongodb database interface class
-import AWS                                  #amazon web services interface
+#import AWS                                  #amazon web services interface
 
 from bson.objectid import ObjectId
 
@@ -194,7 +194,7 @@ def query(dbase, key):
 # Returns (dictionary):
 #   "rc" - return code
 #           1 = success
-#          -1 = No type field found
+#          -1 = No type field found or template not found
 #          -2 = Unknown type
 #          -3 = Record exists
 #
@@ -209,55 +209,46 @@ def insert(mdb, node ):
    if VERBOSE > 0:
       print "Inserting:"+str(node)
 
-   collection = getType( node )
-   if isinstance( collection, int):
-      if VERBOSE > 1:
-         print "Type not defined or present in "+obj
+   #generate a query to get this template. The template id should be the node type
+   try:
+      q={"id":node["type"]}
+   except:
+      print "Type not defined in the record. It is required!"
       return -1
 
-   #make sure record does not currently exist in dictionary
-   q={"id":node["id"]}
-   if mdb.query(collection, q):
+   #Try to extract the template from the dictionary
+   results= mdb.query("templates", q);
+   if len(results) == 0:
+      print str(node["type"])+" template not found. Cannot process"
+      return -1
+   elif len(results) > 1:
+      print "Multiple templates exist for "+str(node["type"])+" using "+str(template)
+   
+   #now that we have a template, check if record exists. We needed the template to get the key
+   template = results[0]
+   key = template["key"]
+
+   try:
+      q={key:node[key]}
+   except:
+      print "Record of type "+template["type"]+" requires a key of "+str(key)+"!"
+      return -1
+
+   if mdb.query(template["collection"], q):
       if VERBOSE > 0:
-         print "Record Exists in "+collection+":"+str(node["id"])
+         print "Record Exists in "+template["collection"]+":"+str(node[key])
       return -3
-
-   #############################################
-   #Correct any node parameters based on verions
-   #############################################
-   if node["version"] == "1.1":
-      if VERBOSE > 0:
-         print "Correcting version 1.1"
-
-      node["version"]=1.1
-      if VERBOSE > 0:
-         print "Version:"+str(node["version"])
-
-      try:
-         node["width"]=int(node[width])
-      except:
-         node["width"] = 0 
-      if VERBOSE > 0:
-         print "Width:"+str(node["width"])
-
-      try:
-         node["height"]=int(node[height])
-      except:
-         node["height"] = 0 
-      if VERBOSE > 0:
-         print "Height:"+str(node["height"])
-
-
 
    #Record found. Let's insert
    if VERBOSE > 1:
-         print "Record "+str(node["id"])+": is ready to insert in "+collection
+         print "Record "+str(node["id"])+": is ready to insert in "+template["collection"]
 
    #remove type key from dictionary
    del node["type"]
 
    #insert new data and return
-   mdb.insert(collection, node)
+   print("Inserting: "+str(template["collection"])+" - "+str(node))
+   mdb.insert(template["collection"], node)
 
    return 1
 
@@ -358,71 +349,71 @@ def writeDict(dbase, dest):
   rc = AJSON.writeJson(dest, dbase, True)
   return rc
 
-"""
-############################################################
-# updateAWS( dbase, bucket)
+#"""
+#############################################################
+## updateAWS( dbase, bucket)
+##
+## Function that get list of AWS objects in a given bucket and
+## adds JSON files to library
+##
+## Inputs: 
+##    mdb    - database class
+##    aws    - Amazon web services class
+##    bucket - name of bucket to write to 
+#############################################################
+#"""
+#def updateAWS( mdb, aws, bucket ):
+#   global VERBOSE 
 #
-# Function that get list of AWS objects in a given bucket and
-# adds JSON files to library
+#   count=0
 #
-# Inputs: 
-#    mdb    - database class
-#    aws    - Amazon web services class
-#    bucket - name of bucket to write to 
-############################################################
-"""
-def updateAWS( mdb, aws, bucket ):
-   global VERBOSE 
-
-   count=0
-
-   #Get list of buckets from AWS
-   objList = aws.getObjectList( bucket )
-   
-   if isinstance( objList, int):
-      if VERBOSE  > 0:
-         print "ADB::upateAWS: Failed on getObjectList with code: "+str(objList)+". Please verify bucket name"
-      return -1
-
-   #Loop through list and process all JSON files
-   for obj in objList:
-      if VERBOSE > 1:
-         print "Updating Object: "+str(obj)
-
-      #If Jsonfile, process
-      if "json" in str(obj): 
-         if VERBOSE > 1:
-            print "Getting JSON object from bucket"
-         node = aws.getJson( obj )
-
-         try:
-            #convert file received from AWS into a python dictionary
-            node = eval(node)
-
-            #Map output file to the given directory
-            path=node["outputFiles"]
-            for key in path:
-#               name="https://s3.amazonaws.com/"+obj.name+"/"+node["outputFiles"][key]
-	
-               name = os.path.dirname(obj.name);
-               name="https://s3.amazonaws.com/"+bucket+"/"+name
-#               name=name.replace('.json','')
-
-               #strip JSON
-               node["outputFiles"][key]=name
-
-            #Insert record into database
-            if VERBOSE > 1:
-               print "Inserting node into database"
-            rc = insert( mdb, node)
-            if rc > 0:
-               count = count +1
-      
-         except:
-            print "Error in JSON file: "+str(obj)
-
-   return count
-   
+#   #Get list of buckets from AWS
+#   objList = aws.getObjectList( bucket )
+#   
+#   if isinstance( objList, int):
+#      if VERBOSE  > 0:
+#         print "ADB::upateAWS: Failed on getObjectList with code: "+str(objList)+". Please verify bucket name"
+#      return -1
+#
+#   #Loop through list and process all JSON files
+#   for obj in objList:
+#      if VERBOSE > 1:
+#         print "Updating Object: "+str(obj)
+#
+#      #If Jsonfile, process
+#      if "json" in str(obj): 
+#         if VERBOSE > 1:
+#            print "Getting JSON object from bucket"
+#         node = aws.getJson( obj )
+#
+#         try:
+#            #convert file received from AWS into a python dictionary
+#            node = eval(node)
+#
+#            #Map output file to the given directory
+#            path=node["outputFiles"]
+#            for key in path:
+##               name="https://s3.amazonaws.com/"+obj.name+"/"+node["outputFiles"][key]
+#	
+#               name = os.path.dirname(obj.name);
+#               name="https://s3.amazonaws.com/"+bucket+"/"+name
+##               name=name.replace('.json','')
+#
+#               #strip JSON
+#               node["outputFiles"][key]=name
+#
+#            #Insert record into database
+#            if VERBOSE > 1:
+#               print "Inserting node into database"
+#            rc = insert( mdb, node)
+#            if rc > 0:
+#               count = count +1
+#      
+#         except:
+#            print "Error in JSON file: "+str(obj)
+#
+#   return count
+#   
 """
 ############################################################
 # getType (node)
@@ -436,6 +427,8 @@ def updateAWS( mdb, aws, bucket ):
 """
 def getType( node ):
    global VERBOSE 
+
+   print "Type:"+str(node)
 
    #Check if type is known
    if node["type"]=="dataset":
@@ -478,7 +471,7 @@ def main():
    parser.add_argument('-p', action='store_const', dest='printout', const='True', help='print contents of JSON file')
    parser.add_argument('-d', action='store', dest='path', help='path to data')
    parser.add_argument('-b', action='store', dest='bucket', help='S3 Bucket with data')
-   parser.add_argument('-a', action='store', dest='aws_access', help='AWS access code')
+#   parser.add_argument('-a', action='store', dest='aws_access', help='AWS access code')
    parser.add_argument('-s', action='store', dest='aws_secret', help='path to data')
    parser.add_argument('-f', action='store', dest='fname', help='filename to insert')
    parser.add_argument('-i', action='store_const', dest='insert', const='True', help='Add records to the given dictionary.')
@@ -514,51 +507,51 @@ def main():
    except:
       print "MDB: Unable to connect to database: "+args.dbase
       return -1
-
-   if args.aws_access:
-      awsAccessKey = args.aws_access
-
-   if args.aws_secret:
-      awsSecretKey = arts.aws_secret
-
-   if args.bucket:
-      awsBucket = args.bucket
-
-   # Connect to AWS class
-   #sdf - need to make this optional
-   aws=AWS.AWS()
-   aws.setVerbose( VERBOSE );
-
-   if VERBOSE > 1:
-      print "Connecting to AWS: "+awsAccessKey+"/"+awsSecretKey
-   try:
-      aws.connect( awsAccessKey, awsSecretKey )
-   except:
-      print "Unable to connect to AWS. Please check inputs"
-      return -1
-
-   #Update specified database with the appropriate bucket
-   if args.update:
-      #ensure bucket and dbase are defined
-      if awsBucket:
-         if VERBOSE > 1:
-            print "Updating database with bucket "+awsBucket
-         rc = updateAWS(mdb, aws, awsBucket )
-
-         print str(rc)+" records added to the database"
-
-         if VERBOSE > 0:
-            if rc > 0:
-               print "ADB::main: Database updated successfully"
-               return 1;
-            else:
-               print "ADB: Unable to update database. Return code:"+rc
-               return -1;
-      else:
-         print "Unable to update. The database bucket name is not defined"
-         return -2
- 
-      return 1
+#
+#   if args.aws_access:
+#      awsAccessKey = args.aws_access
+#
+#   if args.aws_secret:
+#      awsSecretKey = arts.aws_secret
+#
+#   if args.bucket:
+#      awsBucket = args.bucket
+#
+#   # Connect to AWS class
+#   #sdf - need to make this optional
+#   aws=AWS.AWS()
+#   aws.setVerbose( VERBOSE );
+#
+#   if VERBOSE > 1:
+#      print "Connecting to AWS: "+awsAccessKey+"/"+awsSecretKey
+#   try:
+#      aws.connect( awsAccessKey, awsSecretKey )
+#   except:
+#      print "Unable to connect to AWS. Please check inputs"
+#      return -1
+#
+#   #Update specified database with the appropriate bucket
+#   if args.update:
+#      #ensure bucket and dbase are defined
+#      if awsBucket:
+#         if VERBOSE > 1:
+#            print "Updating database with bucket "+awsBucket
+#         rc = updateAWS(mdb, aws, awsBucket )
+#
+#         print str(rc)+" records added to the database"
+#
+#         if VERBOSE > 0:
+#            if rc > 0:
+#               print "ADB::main: Database updated successfully"
+#               return 1;
+#            else:
+#               print "ADB: Unable to update database. Return code:"+rc
+#               return -1;
+#      else:
+#         print "Unable to update. The database bucket name is not defined"
+#         return -2
+# 
+#      return 1
 
 
    #sdf - needs to be checked
@@ -566,14 +559,14 @@ def main():
    #   mdb = MDB(args.dbase, args.host, args.port)
    #else:
    #   mdb = MDB(args.dbase)
-   if args.list_objects:
-      if args.bucket == "ALL":
-         aws.listBuckets()
-      else:
-         aws.listObjects( args.bucket )
-#      bucket = conn.get_bucket('aqueti.data')
-#      for key in bucket.list():
-#         print key.name.encode('utf-8')
+#   if args.list_objects:
+#      if args.bucket == "ALL":
+#         aws.listBuckets()
+#      else:
+#         aws.listObjects( args.bucket )
+##      bucket = conn.get_bucket('aqueti.data')
+##      for key in bucket.list():
+##         print key.name.encode('utf-8')
 
    #We are inserting records. Check if recursing directories or not
    if args.insert:
@@ -585,7 +578,7 @@ def main():
             return -1;
    
 
-         rc = insert(str(args.dbase), str(args.fname))
+         rc = insert(mdb, node)
      
       elif args.path:
          if args.recurse:
