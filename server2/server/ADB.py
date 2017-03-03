@@ -235,7 +235,10 @@ def insert(mdb, node, force ):
       print str(node["type"])+" template not found. Cannot process"
       return -1
    elif len(results) > 1:
-      print "Multiple templates exist for "+str(node["type"])+" using templates"
+      try:
+         print "Multiple templates exist for "+str(node["type"])+". using template from "+str(results[0]["timestamp"])
+      except:
+         print ""
    
    #now that we have a template, check if record exists. We needed the template to get the key
    template = results[0]
