@@ -162,18 +162,22 @@ class MDB:
       """ Query a document from the database """
       posts = self.db[coll]
 
+      print "MDBQuery: "+str(data)
+
+      results = posts.find(data)
+
       #count strings
       if action == 'count':
-         return posts.find(data).count()
+         return len(results)
 
       #find all matching posts
       result = []
 
       if sort == 'none':
-         for post in posts.find(data):
+         for post in results:
             result.append(post)
       else:
-         for post in posts.find(data).sort(sort):
+         for post in results.sort(sort):
             result.append(post)
 
       return result

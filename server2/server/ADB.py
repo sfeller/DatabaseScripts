@@ -250,9 +250,11 @@ def insert(mdb, node, force ):
       print "Record of type "+template["type"]+" requires a key of "+str(key)+"!"
       return -1
 
-   if mdb.query(template["collection"], q):
+   
+   results = mdb.query(template["collection"], q)
+   if len(results) > 0:
       if VERBOSE > 0:
-         print "Record Exists in "+template["collection"]+":"+str(node[key])
+         print "Record Exists in "+template["collection"]+": "+str(node[key])+" from "+str(results[0]["timestamp"]) 
 
       if force:
          print "Adding duplicate document due to force option"
@@ -504,10 +506,13 @@ def main():
    parser.add_argument('-i', action='store_const', dest='insert', const='True', help='Add records to the given dictionary.')
    parser.add_argument('-r', action='store_const', dest='recurse', const='True', help='recursively add JSON files to the dictionary')
    parser.add_argument('-p', action='store_const', dest='printout', const='True', help='print all documents in the collection')
+   parser.add_argument('-q', action='store', dest='query', help='Query structure for the collection in the database')
    parser.add_argument('-u', action='store_const', dest='update', const='True', help='update records')
    parser.add_argument('dbase', help='database name')
 
    args=parser.parse_args()
+
+   print "Query: "+str(args.query)
 
    #set VERBOSE flag as requested
    if args.VERBOSE:
@@ -613,13 +618,20 @@ def main():
             recurse(args.dbase, str(args.path), "insert")
       
 
+
    #print all records in the specified collection
-   if args.printout:
+   if args.printout or args.query:
       if not args.collection:
          print "Must specify the a collection with the -p option"
          return
 
-      results= mdb.query(args.collection, {});
+      if args.query:
+         query = eval(args.query)
+         print "Args.query: "+str(query)
+      else:
+         query = {}
+
+      results= mdb.query(args.collection, query);
 
       #Strip the interneral id files
       for i in range(len(results)):
