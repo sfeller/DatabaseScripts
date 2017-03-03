@@ -91,13 +91,22 @@ class MDB:
    # @param data document to insert
    # @return number of inserted documents
    #############################################
-   def insert(self, collection, data):
+   def insert(self, collection, data, force):
       """Insert a document into the database """
 
       #specify collection
       coll = self.db[collection]
 
-      print("Data:"+str(data))
+      if force:
+         try:
+            print "Inserting: "+str(data)
+#            coll.insert({"$set":data})
+            coll.insert(data)
+            return 1
+         except:
+            e = sys.exc_info()[0]
+            print "Error inserting:"+str(e)
+            return -1
 
       try:
          q = {"id":data["id"]}

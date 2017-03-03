@@ -60,6 +60,17 @@ from bson.objectid import ObjectId
 ############################################################
 VERBOSE = 0                                 #Debug level
 
+############################################################
+## getTimestamp()
+#
+# Function that returns the current timestamp
+############################################################
+def getTimestamp():
+   now = datetime.datetime.now();
+   timestamp=str(now.year).zfill(4)+str(now.month).zfill(2)+str(now.day).zfill(2)+"-"+str(now.hour).zfill(2)+":"+str(now.minute).zfill(2)+":"+str(now.second).zfill(2)
+
+   return timestamp
+
 """
 ############################################################
 # stringList( dbase)
@@ -175,11 +186,17 @@ def query(dbase, key):
 ############################################################
 # insert 
 #
+# @brief Inserts a document into the specified collection
+#
+# @param [in] mdb database object to write to (must be already open)
+# @param [in] node document to insert into the database
+# @param [in] force boolean to force insertion even if record exists
+# @return 1 on success, negative value on failure as per the detailed description
+# 
 # Function that inserts the contents of a dictionary into the specified
-# database. The collection type must be specified in the dictionary 
-# and must be one listed below. The collection name is a the plural
-# fo the type (i.e. component => components). This function assumes
-# all json files have an unique id.
+# database. Each document must include a type field that is used to reference a specific
+# template that can be read from the database. This template is then used to determine what
+# collection the document gets written to defines the primary key to prevent duplicates
 #
 # Supported types:
 #   dataset - dataset of raw images saved from camera
@@ -188,8 +205,6 @@ def query(dbase, key):
 #   component - specific components in the system
 #   model     - image formation model used
 #   
-# Inputs:
-#   record - dictionary to add to the database
 #  
 # Returns (dictionary):
 #   "rc" - return code
@@ -198,11 +213,9 @@ def query(dbase, key):
 #          -2 = Unknown type
 #          -3 = Record exists
 #
-# Comments:
-#   
 ############################################################
 """
-def insert(mdb, node ):
+def insert(mdb, node, force ):
    global VERBOSE
 
    #add node to database
@@ -222,7 +235,7 @@ def insert(mdb, node ):
       print str(node["type"])+" template not found. Cannot process"
       return -1
    elif len(results) > 1:
-      print "Multiple templates exist for "+str(node["type"])+" using "+str(template)
+      print "Multiple templates exist for "+str(node["type"])+" using templates"
    
    #now that we have a template, check if record exists. We needed the template to get the key
    template = results[0]
@@ -237,18 +250,25 @@ def insert(mdb, node ):
    if mdb.query(template["collection"], q):
       if VERBOSE > 0:
          print "Record Exists in "+template["collection"]+":"+str(node[key])
-      return -3
+
+      if force:
+         print "Adding duplicate document due to force option"
+      else: 
+         print "Exiting."
+         return -3
+      
 
    #Record found. Let's insert
    if VERBOSE > 1:
          print "Record "+str(node["id"])+": is ready to insert in "+template["collection"]
 
-   #remove type key from dictionary
-   del node["type"]
+   #add date and time to record
+   node["timestamp"]=getTimestamp()
 
    #insert new data and return
    print("Inserting: "+str(template["collection"])+" - "+str(node))
-   mdb.insert(template["collection"], node)
+   print
+   mdb.insert(template["collection"], node, force)
 
    return 1
 
@@ -461,6 +481,9 @@ def main():
    awsAccessKey = 'AKIAJICPBE3SSHW5SR7A'
    awsSecretKey = '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'
    awsBucket    = 'aqueti.data'
+
+   #default values
+   force = False;
   
    #parse inputs
    # parse command line arguments
@@ -468,16 +491,17 @@ def main():
 
    parser.add_argument('-v', action='store_const', dest='VERBOSE', const='True', help='VERBOSE output')
    parser.add_argument('-vv', action='store_const', dest='VERBOSE2', const='True', help='VERBOSE output')
-   parser.add_argument('-p', action='store_const', dest='printout', const='True', help='print contents of JSON file')
-   parser.add_argument('-d', action='store', dest='path', help='path to data')
    parser.add_argument('-b', action='store', dest='bucket', help='S3 Bucket with data')
+   parser.add_argument('-c', action='store', dest='collection', help='collection (table) to use')
+   parser.add_argument('-d', action='store', dest='path', help='path to data')
 #   parser.add_argument('-a', action='store', dest='aws_access', help='AWS access code')
    parser.add_argument('-s', action='store', dest='aws_secret', help='path to data')
    parser.add_argument('-f', action='store', dest='fname', help='filename to insert')
+   parser.add_argument('-force', action='store_const', dest='force', const='True', help='force override')
    parser.add_argument('-i', action='store_const', dest='insert', const='True', help='Add records to the given dictionary.')
    parser.add_argument('-r', action='store_const', dest='recurse', const='True', help='recursively add JSON files to the dictionary')
+   parser.add_argument('-p', action='store_const', dest='printout', const='True', help='print all documents in the collection')
    parser.add_argument('-u', action='store_const', dest='update', const='True', help='update records')
-   parser.add_argument('-c', action='store', dest='collection', help='collection (table) to use')
    parser.add_argument('dbase', help='database name')
 
    args=parser.parse_args()
@@ -494,6 +518,8 @@ def main():
    if VERBOSE > 1:
       print "Using database "+args.dbase
 
+   if args.force:
+      force = True
 
    ##################################################
    # connect to database and AWS server (if needed)
@@ -577,14 +603,31 @@ def main():
                print "Unable to read record"
             return -1;
    
-
-         rc = insert(mdb, node)
+         rc = insert(mdb, node, force)
      
       elif args.path:
          if args.recurse:
             recurse(args.dbase, str(args.path), "insert")
-   else:
-      print "Currently only insert capability is supported"   
+      
+
+   #print all records in the specified collection
+   if args.printout:
+      if not args.collection:
+         print "Must specify the a collection with the -p option"
+         return
+
+      results= mdb.query(args.collection, {});
+
+      #Strip the interneral id files
+      for i in range(len(results)):
+         try:
+            results[i]["_id"] = str(results[i]["_id"])
+         except:
+            print "ObjectId not found at index"+str(i)
+   
+      print str(results)
+      AJSON.printJson(results)
+      
 
 """
 ############################################################
