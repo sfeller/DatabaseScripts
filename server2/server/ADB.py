@@ -230,7 +230,7 @@ def insert(mdb, node, force ):
       return -1
 
    #Try to extract the template from the dictionary
-   results= mdb.query("templates", {"id":"template"}, 'None', 'timestamp' );
+   results= mdb.query("templates", {"id":node["type"]}, 'None', 'timestamp' );
    if len(results) == 0:
       print str(node["type"])+" template not found. Cannot process"
       return -1
@@ -255,7 +255,11 @@ def insert(mdb, node, force ):
    results = mdb.query(template["collection"], q)
    if len(results) > 0:
       if VERBOSE > 0:
-         print "Record Exists in "+template["collection"]+": "+str(node[key])+" from "+str(results[0]["timestamp"]) 
+         try:
+            print "Record Exists in "+template["collection"]+": "+str(node[key])+" from "+str(results[0]["timestamp"]) 
+         except:
+            print "Record Exists"
+            
 
       if force:
          print "Adding duplicate document due to force option"
