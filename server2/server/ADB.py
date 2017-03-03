@@ -230,7 +230,7 @@ def insert(mdb, node, force ):
       return -1
 
    #Try to extract the template from the dictionary
-   results= mdb.query("templates", q);
+   results= mdb.query("templates", {"id":"template"}, 'None', 'timestamp' );
    if len(results) == 0:
       print str(node["type"])+" template not found. Cannot process"
       return -1
@@ -241,7 +241,8 @@ def insert(mdb, node, force ):
          print ""
    
    #now that we have a template, check if record exists. We needed the template to get the key
-   template = results[0]
+   template = results[len(results)-1]
+
    key = template["key"]
 
    try:

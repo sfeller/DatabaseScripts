@@ -177,6 +177,7 @@ class MDB:
          for post in results:
             result.append(post)
       else:
+         print "Sorting: "+sort
          for post in results.sort(sort):
             result.append(post)
 
