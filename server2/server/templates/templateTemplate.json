@@ -1,13 +1,19 @@
 {
    "version":"0.1.0.0",
-   "collections":
+   "type":"template",
+   "key":"name",
+   "collection":"templates",
+   "fields": 
    {
-      "templates":
-      {
-         "name":{"type":"string","auto":true, "description":"name of the template"},
-         "key":{"type":"string", "description":"specifies which field is"},
-         "version":{"type":"string", "description":"indicates the version of the record"},
-         "timestamp":{"type":"string", "format":"YYYYMMDD_hh:mm:ss", "auto":true, "edit":false, "description":"date and time when the record was created"}
+      "type":{"type":"string", "description":"type of record", "value":"template", "auto":true, "edit":false},
+      "name":{"type":"string", "description":"name of the template", "required":"true"},
+      "key":{"type":"string", "description":"specifies which field is used as they key"},
+      "version":{"type":"string", "description":"indicates the version of the template"},
+      "timestamp":{"type":"string", "format":"YYYYMMDD_hh:mm:ss", "auto":true, "edit":false, "description":"date and time when the record was created"},
+      "collection":{"type":"string", "description":"Name of the collection the template references."},
+      "fields": { "type":"dictionary", "description":"defined fields within the template", "required":true,
+         "data": {
+         }
       }
    }
 }

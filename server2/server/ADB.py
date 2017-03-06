@@ -222,6 +222,15 @@ def insert(mdb, node, force ):
    if VERBOSE > 0:
       print "Inserting:"+str(node)
 
+   #If we are forcing the insert, no queries or other validation
+   if force:
+      #add date and time to record
+      node["timestamp"]=getTimestamp()
+
+      #insert new data and return
+      mdb.insert(node["collection"], node, force)
+      return 1
+
    #generate a query to get this template. The template id should be the node type
    try:
       q={"id":node["type"]}
@@ -229,7 +238,7 @@ def insert(mdb, node, force ):
       print "Type not defined in the record. It is required!"
       return -1
 
-   #Try to extract the template from the dictionary
+   #Try to extract the template from the dictionary.
    results= mdb.query("templates", {"id":node["type"]}, 'None', 'timestamp' );
    if len(results) == 0:
       print str(node["type"])+" template not found. Cannot process"
@@ -259,26 +268,13 @@ def insert(mdb, node, force ):
             print "Record Exists in "+template["collection"]+": "+str(node[key])+" from "+str(results[0]["timestamp"]) 
          except:
             print "Record Exists"
-            
 
-      if force:
-         print "Adding duplicate document due to force option"
-      else: 
          print "Exiting."
          return -3
-      
 
    #Record found. Let's insert
    if VERBOSE > 1:
          print "Record "+str(node["id"])+": is ready to insert in "+template["collection"]
-
-   #add date and time to record
-   node["timestamp"]=getTimestamp()
-
-   #insert new data and return
-   print("Inserting: "+str(template["collection"])+" - "+str(node))
-   print
-   mdb.insert(template["collection"], node, force)
 
    return 1
 
