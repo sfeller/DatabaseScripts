@@ -1,7 +1,13 @@
 {
-   "type":"template",
-   "id":"template",
-   "key":"id",
-   "version":"0.1.0.1",
-   "collection":"templates"
+   "version":"0.1.0.0",
+   "collections":
+   {
+      "templates":
+      {
+         "name":{"type":"string","auto":true, "description":"name of the template"},
+         "key":{"type":"string", "description":"specifies which field is"},
+         "version":{"type":"string", "description":"indicates the version of the record"},
+         "timestamp":{"type":"string", "format":"YYYYMMDD_hh:mm:ss", "auto":true, "edit":false, "description":"date and time when the record was created"}
+      }
+   }
 }
