@@ -64,10 +64,11 @@ var db =
    *
    * inputs
    ************************************************************/
-   getDocumentList: function (args, callback)
+   getDocuments: function (args, callback)
    {
+      
       //Establish listen function to process results
-      socket.once('documentList', function(data)
+      socket.once('documents', function(data)
       {
          if(data.error)
          {
@@ -75,14 +76,14 @@ var db =
          }
          else
          {
-            args["documentList"] = data["documentList"];
-            callback(args);
+            callback(data, args);
          }
       });
                 
       //Everything is ready. Emit data request. Call back should take results.
       //args should have collection, sort, and query
-      socket.emit("getDocumentList", {"collection":args["collection"],"query":args["query"],"sort":args["sort"]});
+      alert("getting documents:"+JSON.stringify(args["collection"])+",query:"+JSON.stringify(args["query"]));
+      socket.emit("getDocuments", {"collection":args["collection"],"query":args["query"],"sort":args["sort"]});
    },
 
 

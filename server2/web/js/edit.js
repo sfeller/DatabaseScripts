@@ -10,7 +10,7 @@
 
 /************************************************************
  * Listener function for page events
- ************************************************************/
+ ************************************************************
 $(document).ready(function()
 {
    //AddItem button callback
@@ -68,7 +68,7 @@ $(document).ready(function()
       db.setData( args, setResultCallback);
    });
 });
-
+*/
 /************************************************************
  * clear values for a given element and all of its children
  ************************************************************/
@@ -130,9 +130,11 @@ var genNewIdCallback = function(args)
 }
 
 
-/************************************************************
- * Callback from the loadTemplate Function
- ************************************************************/
+/**
+ * \brief Callback from the loadTemplate Function
+ *
+ * 
+ **/
 var getTemplateListCallback = function(args,json) 
 {
    args.template = json;
@@ -237,11 +239,12 @@ var getDataCallback = function(args)
    workDiv.setAttribute("method","post");
 }
    
-/************************************************************
- * Generate an iamge form a given value
+/**
+ * \brief Entry point to generate the web interface to the Aqueti database
+ * \param [in] input name of the collection to work from
  *
- * Top level function to generate the homepage. 
- ************************************************************/
+ * This function is called from within the html.
+ **/
 function genWorkPage(input)
 {
    //Get the mainDiv and assign some values
@@ -264,13 +267,22 @@ function genWorkPage(input)
    db.getCollectionList( args, getCollectionListCallback);
 }
 
-/************************************************************
- * This function is called whenever a new list of collections
+/**
+ * \brief Function that is called when a new collection list is received
+ * \param [in] response data received from the database (list of collections)
+ * \param [in] args initial arguments passed into the request
+ *
+ * This callback creates a selecCollDiv web element that lists the collections
+ * in the specified dictionary. A listener is created that loads queries the database
+ * for a list of templates supporting the collection on creation or if new collection 
  * is selected.
  *
- * args variables
- * - data - list of collection in the database
- ************************************************************/
+ * args fields:
+ *    - collection - selected collection (default="template")
+ * 
+ * Calling functions:
+ *    - genWorkPage 
+ **/
 var getCollectionListCallback = function( response, args)
 {
    //Get the main element
@@ -307,16 +319,40 @@ var getCollectionListCallback = function( response, args)
    $(select).trigger('change');
 }
 
-/************************************************************
- * This function is called whenever a new list of collections
- * is selected.
+/**
+ * \brief Callback for a list of available templates for the selected collection.
  *
- * args variables
- * - data - list of collection in the database
- ************************************************************/
+ * \param [in] response the data returned from the database request
+ * \param [in] args request send to the database.
+ *
+ * This callback generates a drop down list of available templates for the given collection and
+ * generates a query page that allows users to enter query parameters for data. A listener is 
+ * created that updates the query page if a new version of the template is selected. A second
+ * listener is created to handle a submission button press. 
+ *
+ * args fields:
+ *    - collection - selected collection
+ *    - collectionList - list of collections in the database
+ * 
+ * Calling functions:
+ *    - getCollectionListCallback
+ **/
 var getTemplatesCallback = function(response, args)
 {
-   args["templates"] = response;
+   //If we have a response, replace the templates field. If args.templates does not exist
+   //create an empty dictionary with it.
+   if( response.length > 0 ) {
+      args["templates"] = response;
+
+      //Set default version (if it does not exist)
+      if( args["templateVersion"] == undefined ) {
+         args["templateVersion"] = response[response.length-1]["version"];
+      }
+   }
+   else if( args["templates"] == undefined ) {
+      alert("No templates found for collection!");
+      args["templates"] = {};
+   }
 
    //Get the main element
    var mainDiv = document.getElementById("mainDiv");
@@ -335,46 +371,106 @@ var getTemplatesCallback = function(response, args)
       versionList[i] = args["templates"][i]["version"];
    }
 
-   var select = genDropDownList( "templates","templates",templateList);
-   select.setAttribute("id","templateDropDown");
-
    var versionSelect = genDropDownList( "templateVersion","templateVersion",versionList);
    versionSelect.setAttribute("id","templateVersionDropDown");
+   versionSelect.value = versionList[versionList.length-1];
 
    //Add to the page elements
-   templateDiv.appendChild(document.createTextNode("Templates: "));
-   templateDiv.appendChild(select);
+   templateDiv.appendChild(document.createTextNode("Template Version: "));
    templateDiv.appendChild(versionSelect);
 
-   //Create the version field
-   var versionSelect = genDropDownList
+   var h2 = document.createElement("h2");
+   h2.appendChild(document.createTextNode("Query"));
+   mainDiv.appendChild(h2);
 
-   //Create listener for a collection change. This is an event driven call
-   $(select).change( function() 
+   //Create the submit button for a query now. This will be displayed after the version is selected
+   var queryButton = genSubmitButton("Submit Query");
+
+   ///////////////////////////////////////////// 
+   // Create listener for a template version change
+   ///////////////////////////////////////////// 
+   $(versionSelect).change( function() 
    {
-      //Establish collection and query
       //Get selected value and generate remaining pages
-      args.template = $("#templateDropDown option:selected").text();
-      args.query={"version":args["template"]}
+      var index = $("#templateVersionDropDown option:selected").index();
+      args["templateIndex"] = index;
 
-      //get data with the given callback
-      db.getData(args, getDataCallback());
+      var li = genInput(args["templates"][index], "QueryList" );
+      mainDiv.appendChild(li);
+      mainDiv.appendChild(queryButton);
    });
 
-   //Create listener for version change
-   $(select).change( function() 
+  
+   ///////////////////////////////////////////// 
+   // Query Button listener
+   ///////////////////////////////////////////// 
+   $(queryButton).click( function() 
    {
-      //Establish collection and query
-      //Get selected value and generate remaining pages
-      args.template = $("#templateDropDown option:selected").text();
-      args.query={"version":args["template"]}
+      //Get query data
+      var queryElement = document.getElementById("QueryList");
+      var qlist = parseInputTree(queryElement);
 
-      //get data with the given callback
-      db.getData(args, getDataCallback());
+      if( qlist["queryList"] == undefined ) {
+         args.query = {};
+      }
+      else {
+         args.query = qlist["QueryList"];
+      }
+
+      alert("ARGS:"+JSON.stringify(args));
+      //submit data request
+      db.getDocuments( args, documentListCallback );
    });
 
    //trigger default selection
-   $(select).trigger('change');
+   $(versionSelect).trigger('change');
+}
+
+
+/** 
+ * \brief Callback for when a document is received from the database
+ **/
+var documentListCallback= function( response, args )
+{
+   args["documents"] =  response;
+
+   //Get the main element
+   var mainDiv = document.getElementById("mainDiv");
+
+   var index = args["documents"].length-1;
+   var template =  args["templates"][args["templateIndex"]];
+   //Generate a list from the first one
+   var li = genInput( template, template["key"], args["documents"][index]);
+
+   mainDiv.appendChild(li);
+}
+
+
+/**
+ * \brief Generate a submit button with the given name
+ * \param [in] name text to place on the button. Also name of the button
+ **/
+var genSubmitButton = function( name )
+{
+   var submitButton = document.createElement("input");
+   submitButton.setAttribute("type","submit");
+   submitButton.setAttribute("name",name);
+   submitButton.setAttribute("id",name);
+   submitButton.value = name;
+
+   return submitButton;
+}
+
+
+//   $('#submit').attr('onClick','alert("done"); return false;');
+
+/**
+ * \brief Function to generate a query page (to assist with looking for new data
+ *
+ **/
+var genQueryPage = function(args)
+{
+
 }
 
 /************************************************************
@@ -473,7 +569,6 @@ var documentSelectCallback = function(args)
    for( var i = 0; i < data.length; i++)
    {
       var item = data[i]
-      alert( "Item: "+ JSON.stringify(item[item["key"]]))
       var option = document.createElement("option");
         $(option).val(item[item["key"]]);
         $(option).attr("key",item["key"]);
@@ -512,7 +607,7 @@ function genDropDownList( name, id, options )
       var opt = document.createElement("option");
       var text = document.createTextNode(options[i]);
       opt.appendChild(text);
- 
+      opt.setAttribute("index",i);
       select.appendChild(opt);
    }
 
@@ -565,7 +660,6 @@ function parseInputTree( root )
    //If UL
    if( tag == "UL")
    { 
-
       /////////////////////////////////////////////
       //If we're an array
       /////////////////////////////////////////////
@@ -573,9 +667,9 @@ function parseInputTree( root )
       {
          var  arr = [];
 
-         for( var i= 0; i <children.length; i++)
+         for( var i= 0; i < children.length; i++)
          {
-            var data = {};
+//            var data = {};
 
             var tag = $(children[i]).prop("tagName");
             if( tag == "LI")
@@ -590,7 +684,10 @@ function parseInputTree( root )
          }
 
          var data = {};
-         data[title] = arr;
+
+         if(arr.length ) {
+            data[title] = arr;
+         }
 
          return data;
       }
@@ -605,11 +702,13 @@ function parseInputTree( root )
          {
             var element = parseInputTree(children[i]);
 
-            if(element != -1)
+            if(element != "")
             {
                var keys = Object.keys(element);
                for( key in keys)
+               {
                   data[keys[key]] = element[keys[key]];
+               }
             }
          }
 
@@ -630,7 +729,7 @@ function parseInputTree( root )
          {
             var value = parseInputTree( children[i]);
 
-            if( value != -1)
+            if( value != "")
             {
                var keys = Object.keys(value);
                for( key in keys)
@@ -651,7 +750,7 @@ function parseInputTree( root )
 
          var element = parseInputTree( children[i]);
 
-         if( element != -1)
+         if( element != "")
          {
             return element;
          }
@@ -664,7 +763,9 @@ function parseInputTree( root )
       var data = {};
 //      var key = $(root).attr("title");
       var key = title;
-      data[key] = $(root).val();
+      if( $(root).val() !== "" ) {
+         data[key] = $(root).val();
+      }
       return data
    }
    else if( tag == "SELECT")
@@ -948,9 +1049,10 @@ function genDict( template, data)
 
    
 /***********************************************************
- * genUL
+ * \brief Function to generate an unordered list from a dictionary
  *
- * function to generate an unordered list
+ * \param [in] template template that the UL will be based on
+ * \param [in] item     values that will be assigned to template fields
  ***********************************************************/
 function genUL( template, item)
 {
@@ -958,31 +1060,35 @@ function genUL( template, item)
    var ul = document.createElement("ul");
 
    //Loop through all of the keys in the template and
-   //generate the appropriate item
+   //generate the appropriate item.
    for( var key in template)
    {
       if(item==undefined)
-         var li = genInput( template[key],"",key);
+         var li = genInput( template[key],key, "");
       else
-         var li = genInput( template[key],item[key], key);
+         var li = genInput( template[key],key, item[key]);
 
-//      li.setAttribute("title",key);
       ul.appendChild(li);
    }
    return ul;
 }
 
-/***********************************************************
- * genInput
+/**
+ * \brief Function to generate the input Form
+ * 
+ * \param [in] template reference template generating an input display
+ * \param [in] item specific item with values to assign to the template fields. Optional
+ * \param [in] key  key to assign to the the newly created element
  *
- * Function to generate the input Form
- *
- * Steps through all template component provided.
- ************************************************************/
-function genInput(template, item, key)
+ * This function autogenerates a query page from a the provided template. If an item is provided,
+ * template paramters will be filled in with item values. The key determines the name of the new
+ * component and is used for regenerating the key-value data when a form is submitted.
+ **/
+function genInput(template, key, item)
 {
    //Create an li component
    var li = document.createElement("li");
+   li.setAttribute("id",key);
 
    /////////////////////////////////////////////
    //Generate a dictionary UL
@@ -1097,7 +1203,6 @@ function genInput(template, item, key)
          input.setAttribute("disable",true);
       }
 
-//      li.setAttribute("title",key);
       li.innerHTML=key;
       li.appendChild(input);
    }

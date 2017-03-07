@@ -1,10 +1,10 @@
 {
-   "version":"0.1.0.0",
-   "type":"template",
+   "version":"0.1.1.0",
+   "type":"dictionary",
    "name":"template",
    "key":"name",
    "collection":"templates",
-   "fields": 
+   "data": 
    {
       "type":{"type":"string", "description":"type of record", "value":"template", "auto":true, "edit":false},
       "name":{"type":"string", "description":"name of the template", "required":"true"},
@@ -12,7 +12,7 @@
       "version":{"type":"string", "description":"indicates the version of the template"},
       "timestamp":{"type":"string", "format":"YYYYMMDD_hh:mm:ss", "auto":true, "edit":false, "description":"date and time when the record was created"},
       "collection":{"type":"string", "description":"Name of the collection the template references."},
-      "fields": { "type":"dictionary", "description":"defined fields within the template", "required":true,
+      "data": { "type":"dictionary", "description":"defined fields within the template", "required":true,
          "data": {
          }
       }

@@ -111,14 +111,20 @@ class AquetiNamespace(BaseNamespace):
    #get a list of documents for hte given collection (and query)
    def on_getDocuments( self, data ):
       #see if we have a template
-      try:
-         data.templates = mdb.query("templates", {"collection":data.collection})
-      except:
-         print "Template does not exist for collection named "+data.collection
+      print "getting documents: "+str(data);
+#      try:
+#         data.templates = mdb.query("templates", {"collection":data["collection"]})
+#      except:
+#         print "Template does not exist for collection named "+data["collection"]
 
-      data.documents = mdb.query( data.collection, data.query );
+      data["documents"] = mdb.query( data["collection"], data["query"] );
 
-      data.emit("data",data)
+      data = remove_Id(data["documents"])
+
+      print("Results: "+str(data))
+      self.emit("documents", data)
+
+      
 
 
    #requests a list of collections
