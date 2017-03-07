@@ -25,10 +25,8 @@ import AJSON
 class MDB:
    """Interface to a MongoDB Database."""  
    
-   #class variables
    connection = ""
    db = ""
-#   db = "aware" 
 
    
    #############################################
@@ -81,7 +79,6 @@ class MDB:
 
       return
 
-
    #############################################
    ## Insert document 
    # @brief Inserts the document indicated by data into the specified collection
@@ -100,7 +97,6 @@ class MDB:
       if force:
          try:
             print "Inserting: "+str(data)
-#            coll.insert({"$set":data})
             coll.insert(data)
             return 1
          except:
@@ -162,7 +158,7 @@ class MDB:
       """ Query a document from the database """
       posts = self.db[coll]
 
-      print "MDBQuery: "+str(data)
+      print "MDBQuery: "+str(coll)+", "+str(data)
 
       results = posts.find(data)
 
@@ -184,10 +180,10 @@ class MDB:
       return result
 
    #############################################
-   # Dump Database
+   # Get a list of collections
    #############################################
    def getCollections(self):
-      colls = self.db.collection_names
+      return self.db.collection_names()
    
    #############################################
    # Dump Database
@@ -230,7 +226,7 @@ def main():
    parser.add_argument('-a', action='store', dest='add', help='add specified file into dictionary')
    parser.add_argument('-q', action='store', dest='query', help='query speficied key pair')
    parser.add_argument('-d', action='store_const', dest='dump', const='True', help='query speficied key pair')
-   parser.add_argument('-c', action='store_const', dest='action', const='count', help='query speficied key pair')
+   parser.add_argument('-c', action='store_const', dest='listCollections', const='True', help='query speficied key pair')
    parser.add_argument('-o', action='store', dest='outfile', help='output file')
    parser.add_argument('dbase', help='database to reference')
 
@@ -253,6 +249,9 @@ def main():
    if VERBOSE > 0:
      print "Using "+args.dbase+" as the database"
 
+   #if -c option list collections
+   if listCollections:
+      print str(mdb.getCollections())
 
    #add specified file to the database
    if args.add:

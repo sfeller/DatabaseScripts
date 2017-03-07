@@ -66,7 +66,8 @@ import MDB                                  #mongodb database interface class
 
 VERBOSE = 1;
 mdb = None;
-collections = ["composites","albums","snapshots"]
+#collections = ["composites","albums","snapshots"]
+collections = []
 port=8088
 
 ############################################################
@@ -83,7 +84,6 @@ class AquetiNamespace(BaseNamespace):
       self.nick = None
 
    def disconnect(self, *args, **kwargs):
-#      if self._nick:
       if self.nick:
          self._users.pop(self._nick, None)
       super(AquetiNamespace, self).disconnect(*args, **kwargs)
@@ -108,9 +108,24 @@ class AquetiNamespace(BaseNamespace):
       for s in self._registry.values():
          s.emit(event, message)
 
+   #get a list of documents for hte given collection (and query)
+   def on_getDocuments( self, data ):
+      #see if we have a template
+      try:
+         data.templates = mdb.query("templates", {"collection":data.collection})
+      except:
+         print "Template does not exist for collection named "+data.collection
+
+      data.documents = mdb.query( data.collection, data.query );
+
+      data.emit("data",data)
+
+
    #requests a list of collections
-   def on_collections(self, data):
-      self.emit('collections',collections)
+   def on_getCollections(self,data):
+      print "Getting collections"
+      collections = mdb.getCollections()
+      self.emit('getCollections',collections)
 
    #############################################
    # add data
@@ -155,7 +170,7 @@ class AquetiNamespace(BaseNamespace):
       result = remove_Id(result)
 
       print
-      print str(result)
+      print "get Data result: "+str(result)
       print
 
       #if we're an albums, fill out items data
@@ -202,19 +217,32 @@ class AquetiNamespace(BaseNamespace):
 
             result[i]["items"] = items;
 
-      print "Complete!"
+      print "Complete! : "+str(result)
 
       #return result
       self.emit("data",result)
 
    ##############################
-   # getTemplate
+   # getTemplates
    ##############################
-   def on_getTemplate(self, data):
-      template = AJSON.readJson(data["type"]+".json")
+   def on_getTemplates(self, data):
+       print "Template request:" + str(data)
+#      template = AJSON.readJson(data["type"]+".json")
 #      print("Template:"+str(template))
-      print("Template: "+str(data["type"])+".json")
-      self.emit("template", template["collections"][data["collection"]]["data"])
+#      print("Template: "+str(data["type"])+".json")
+#      self.emit("template", template["collections"][data["collection"]]["data"])
+
+       templates = mdb.query( "templates", data["query"] )
+   
+       #Strip the interneral id files
+       for i in range(len(templates)):
+         try:
+            templates[i]["_id"] = str(templates[i]["_id"])
+         except:
+            print "ObjectId not found at index"+str(i)
+   
+       self.emit("getTemplates", templates)
+    
 
    ##############################
    # sendFile
@@ -295,8 +323,12 @@ def serve_file(environ, start_response):
 # remove_Id
 ############################################################
 def remove_Id(data):
+   print( str(data))
    for item in data:
-      del item["_id"]
+      try:
+         del item["_id"]
+      except: 
+         print "Key failure: "+str(item)
 
    return data
 

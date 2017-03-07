@@ -107,13 +107,12 @@ var genEditDiv = function(args)
 
    //Set query for the data we are looking for
    //sdf - Modify here to make general
-//   args.query["id"]=params[args.collection];
-
    //Create query from the input value
-   args.query["id"] = args["id"];
+   args.query[args["key"]] = args["value"];
    
    //get template for teh specified type
-   db.getTemplate(args,loadTemplateCallback);
+   alert("EditDiv: "+JSON.stringify( args))
+   db.getData(args,getTemplateCallback);
 }
 
 /************************************************************
@@ -123,26 +122,22 @@ var genNewIdCallback = function(args)
 { 
    args.data = args.query;
 
-   //set the querySelect value to the new record
-   //$("#querySelect").val(args["id"]);
-
-   //Call change for the defult (new value0
-   //$("#querySelect").trigger('change');
-//   collectionChangeCallback( args);
-
    args.query["id"] = args["id"];
 
    //get template for teh specified type
-   db.getTemplate(args, loadTemplateCallback);
+   alert("newIDCall: "+JSON.stringify( args))
+   db.getTemplateList(args, getTemplateListCallback);
 }
 
 
 /************************************************************
  * Callback from the loadTemplate Function
  ************************************************************/
-var loadTemplateCallback = function(args,json) 
+var getTemplateListCallback = function(args,json) 
 {
    args.template = json;
+
+   alert("template:"+JSON.stringify( args));
 
    //get Data and generate form
    db.getData( args, getDataCallback);
@@ -245,9 +240,9 @@ var getDataCallback = function(args)
 /************************************************************
  * Generate an iamge form a given value
  *
- * Top level function to generate the homepage
+ * Top level function to generate the homepage. 
  ************************************************************/
-function genWorkPage()
+function genWorkPage(input)
 {
    //Get the mainDiv and assign some values
    var mainDiv = document.getElementById("mainDiv");
@@ -256,49 +251,56 @@ function genWorkPage()
 
    utils.removeChildren(mainDiv);
 
-   db.getCollections( getCollectionCallback);
+   var args = {};
+
+   if(input == undefined){
+      args.collection = "templates";
+   }
+   else {
+      args.collection = input;
+   }
+
+   //Get a list of collections in the database
+   db.getCollectionList( args, getCollectionListCallback);
 }
 
 /************************************************************
  * This function is called whenever a new list of collections
  * is selected.
  *
- * Top level function to generate the homepage.
- *
  * args variables
  * - data - list of collection in the database
  ************************************************************/
-var getCollectionCallback = function(data)
+var getCollectionListCallback = function( response, args)
 {
    //Get the main element
    var mainDiv = document.getElementById("mainDiv");
 
    //Create select box at top
-   var selectDiv = document.createElement("div");
-   selectDiv.setAttribute("id","selectDiv");
-   mainDiv.appendChild(selectDiv);
+   var selectCollDiv = document.createElement("div");
+   selectCollDiv.setAttribute("id","selectCollDiv");
+   mainDiv.appendChild(selectCollDiv);
+
+   args.collectionList = response;
 
    //Create dropdown list
-   var select = genDropDownList( "collections","collections",data);
-   select.setAttribute("id","selectColl");
+   var select = genDropDownList( "collections","collections",args["collectionList"]);
+   select.setAttribute("id","collectionDropDown");
+   select.value = args.collection;
 
    //Add to the page elements
-   selectDiv.appendChild(document.createTextNode("Collection:"));
-   selectDiv.appendChild(select);
+   selectCollDiv.appendChild(document.createTextNode("Collection: "));
+   selectCollDiv.appendChild(select);
 
-   //Create listener for a colleciton change
+   //Create listener for a colleciton change. This is an event driven call
    $(select).change( function() 
    {
-      var args = {};
-
       //Establish collection and query
       //Get selected value and generate remaining pages
-      args.collection = $("#selectColl option:selected").text();
-      args.query={};
-      args.sort={};
+      args.collection = $("#collectionDropDown option:selected").text();
 
       //get data with the given callback
-      db.getData(args, collectionChangeCallback);
+      db.getTemplates(args, getTemplatesCallback);
    });
 
    //trigger default selection
@@ -309,28 +311,70 @@ var getCollectionCallback = function(data)
  * This function is called whenever a new list of collections
  * is selected.
  *
- * Top level function to generate the homepage
- *
- * input variables
- * - callback - callback function for the getData.
- ************************************************************
-function collectionChange(callback)
+ * args variables
+ * - data - list of collection in the database
+ ************************************************************/
+var getTemplatesCallback = function(response, args)
 {
-}
-*/
+   args["templates"] = response;
 
-/************************************************************
- * Function to remove all children of an element
- ************************************************************
-var utils.removeChildren = function( element)
-{
-   var fc = element.firstChild;
+   //Get the main element
+   var mainDiv = document.getElementById("mainDiv");
 
-   while( fc)
+   //Create select box at top
+   var templateDiv = document.createElement("div");
+   templateDiv.setAttribute("id","templateDiv");
+   mainDiv.appendChild(templateDiv);
+
+   var templateList = [];
+   var versionList = [];
+   //Create dropdown list of templates to choose. 
+   for( var i = 0; i < args["templates"].length; i++ )
    {
-      element.removeChild( fc );
-      fc = element.firstChild;
+      templateList[i] = args["templates"][i]["name"];
+      versionList[i] = args["templates"][i]["version"];
    }
+
+   var select = genDropDownList( "templates","templates",templateList);
+   select.setAttribute("id","templateDropDown");
+
+   var versionSelect = genDropDownList( "templateVersion","templateVersion",versionList);
+   versionSelect.setAttribute("id","templateVersionDropDown");
+
+   //Add to the page elements
+   templateDiv.appendChild(document.createTextNode("Templates: "));
+   templateDiv.appendChild(select);
+   templateDiv.appendChild(versionSelect);
+
+   //Create the version field
+   var versionSelect = genDropDownList
+
+   //Create listener for a collection change. This is an event driven call
+   $(select).change( function() 
+   {
+      //Establish collection and query
+      //Get selected value and generate remaining pages
+      args.template = $("#templateDropDown option:selected").text();
+      args.query={"version":args["template"]}
+
+      //get data with the given callback
+      db.getData(args, getDataCallback());
+   });
+
+   //Create listener for version change
+   $(select).change( function() 
+   {
+      //Establish collection and query
+      //Get selected value and generate remaining pages
+      args.template = $("#templateDropDown option:selected").text();
+      args.query={"version":args["template"]}
+
+      //get data with the given callback
+      db.getData(args, getDataCallback());
+   });
+
+   //trigger default selection
+   $(select).trigger('change');
 }
 
 /************************************************************
@@ -342,7 +386,57 @@ var utils.removeChildren = function( element)
  * - args.sort - sort options for data
  * - args.data - results from the getData
  ************************************************************/
-var collectionChangeCallback = function(args)
+var selectSelectCollectionCallback = function(args)
+{
+   //Get the queryDiv and set the title to the new value
+   var mainDiv = document.getElementById("mainDiv");
+
+   //Create select box at top
+   var selectDocDiv = document.createElement("div");
+   selectDocDiv.setAttribute("id","selectDocDiv");
+   mainDiv.appendChild(selectDocDiv);
+
+   //Create dropdown list
+   for( var i = 0; i < args.data.length; i++ )
+   {
+
+   }
+   var select = genDropDownList( "documents","documents",args.data);
+   select.setAttribute("id","documentDropDown");
+
+   //Add to the page elements
+   selectDocDiv.appendChild(document.createTextNode("Document:"));
+   selectDocDiv.appendChild(select);
+/*
+   //Create listener for a colleciton change. This is an event driven call
+   $(select).change( function() 
+   {
+      var args = {};
+
+      //Establish collection and query
+      //Get selected value and generate remaining pages
+      args.document= $("#selectDocDiv option:selected").text();
+      args.query={};
+      args.sort={};
+
+      //get data with the given callback
+      db.getData(args, documentSelectCallback);
+   });
+*/
+   //trigger default selection
+   $(select).trigger('change');
+}
+
+/************************************************************
+ * Function that is executed when a collection is selected
+ *
+ * Inputs:
+ * - args.collection - name of selected collection
+ * - args.query - query values for selecting items
+ * - args.sort - sort options for data
+ * - args.data - results from the getData
+ ************************************************************/
+var documentSelectCallback = function(args)
 {
    //Get the queryDiv and set the title to the new value
    var mainDiv = document.getElementById("mainDiv");
@@ -358,43 +452,35 @@ var collectionChangeCallback = function(args)
 
    mainDiv.appendChild(queryDiv);
 
-
-   //sdf    if( $("#querySelect").length == 0)
    //Create the select element if we haven't. If we have, clear it
    //of its options
    var select = document.createElement("select");
    select.setAttribute("id","querySelect");
+   
    queryDiv.appendChild(document.createTextNode("Document:"));
    queryDiv.appendChild(select);
 
-/*   
-   else
-   {
-      //remove all children from the querySelect div since
-      //we've changed the collections
-      var select = document.getElementById("querySelect");
-      if( select != null)
-         removeChildren(select);
-   }
+/*
+   //Option to create a new document
+   var newoption = document.createElement("option");
+   $(newoption).val("new");
+   $(newoption).attr("label","new");
+   select.appendChild(newoption);
 */
-   //Add option for a new item if we're not a collection (they are added when an image is uploade)
-   if( args.collection != "composites")
-   {
-      var newoption = document.createElement("option");
-      $(newoption).val("new");
-      $(newoption).attr("label","new");
-      select.appendChild(newoption);
-   }
 
    //Add an item for each item returned in args["data"]
-   for( var item in args["data"])
+   var data = args["data"]
+   for( var i = 0; i < data.length; i++)
    {
+      var item = data[i]
+      alert( "Item: "+ JSON.stringify(item[item["key"]]))
       var option = document.createElement("option");
-      $(option).val(args["data"][item]["id"]);
-      $(option).attr("label",args["data"][item]["id"]+" - "+args["data"][item]["date"]+" - "+args["data"][item]["title"]);
-      select.appendChild(option);
+        $(option).val(item[item["key"]]);
+        $(option).attr("key",item["key"]);
+        $(option).attr("label",item[item["key"]]+" - "+item[item["timestamp"]]);
+       select.appendChild(option);
    }
-
+/*
    //Create listener to detect change in selected document
    $(select).change( function() 
    {
@@ -402,14 +488,16 @@ var collectionChangeCallback = function(args)
       args.collection = $("#queryDiv").attr("title");
 
       //Pull value from the calling function
-      args.id = $(this).val();
+      args.key = $("option:selected", this).attr("key");
+      args.value= $(this).val();
 
-      //Generate the edit element
+      //Generate the edit element (top level for entire document)
       genEditDiv(args);
    });
 
    //Call change for the defult (new value0
    $(select).trigger('change');
+*/
 }
 
 /************************************************************
@@ -424,7 +512,7 @@ function genDropDownList( name, id, options )
       var opt = document.createElement("option");
       var text = document.createTextNode(options[i]);
       opt.appendChild(text);
-
+ 
       select.appendChild(opt);
    }
 

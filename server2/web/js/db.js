@@ -39,10 +39,10 @@ var db =
    /************************************************************
    * getCollections object
    ************************************************************/
-   getCollections: function (callback)
+   getCollectionList: function (args, callback)
    {
       //Set up listener for changing the collection
-      socket.once('collections', function(data)
+      socket.once('getCollections', function(data)
       {
          if(data.error)
          {
@@ -50,13 +50,41 @@ var db =
          }
          else
          {
-            getCollectionCallback(data);
+            callback(data, args);
          }
       });
 
       //Send request, response triggers listener.
-      socket.emit("collections","");
+      socket.emit("getCollections","");
    },
+
+
+   /************************************************************
+   * getData object
+   *
+   * inputs
+   ************************************************************/
+   getDocumentList: function (args, callback)
+   {
+      //Establish listen function to process results
+      socket.once('documentList', function(data)
+      {
+         if(data.error)
+         {
+            alert("Data transmission error!");
+         }
+         else
+         {
+            args["documentList"] = data["documentList"];
+            callback(args);
+         }
+      });
+                
+      //Everything is ready. Emit data request. Call back should take results.
+      //args should have collection, sort, and query
+      socket.emit("getDocumentList", {"collection":args["collection"],"query":args["query"],"sort":args["sort"]});
+   },
+
 
    /************************************************************
    * getData object
@@ -93,10 +121,14 @@ var db =
     *    args[url] - link to the file to load
     *    callback  - callback function to process loaded data
     ************************************************************/
-   getTemplate: function(args, callback)
+   getTemplates: function(args, callback)
    {
+      var request = {}
+      request.collection = "templates"
+      request.query = {"collection":args["collection"]}
+
       //Establish listen function to process results
-      socket.once('template', function(data)
+      socket.once('getTemplates', function(data)
       {
          if(data.error)
          {
@@ -104,16 +136,12 @@ var db =
          }
          else
          {
-            callback(args, data)
+            callback(data,args)
          }
       });
 
-      var request = {};
-      request["collection"] = args.collection;
-      request["type"] = "template";
-                    
       //Everything is ready. Emit data request. Call back should take results.
-      socket.emit("getTemplate", request);
+      socket.emit("getTemplates", request);
    },
 
    /************************************************************
@@ -124,11 +152,11 @@ var db =
     * Inputs:
     *    args[url] - link to the file to load
     *    callback  - callback function to process loaded data
-    ************************************************************/
+    ************************************************************
    getQueryTemplate: function(args, callback)
    {
       //Establish listen function to process results
-      socket.once('template', function(data)
+      socket.once('getTemplates', function(data)
       {
          if(data.error)
          {
@@ -145,9 +173,9 @@ var db =
       request["type"] = "query";
 
       //Everything is ready. Emit data request. Call back should take results.
-      socket.emit("getTemplate", request);
+      socket.emit("getTemplates", request);
    },
-
+*/
    /************************************************************
    * genNewId - function to get a new id
    *

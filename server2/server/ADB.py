@@ -500,9 +500,10 @@ def main():
    parser.add_argument('-b', action='store', dest='bucket', help='S3 Bucket with data')
    parser.add_argument('-c', action='store', dest='collection', help='collection (table) to use')
    parser.add_argument('-d', action='store', dest='path', help='path to data')
+   parser.add_argument('-f', action='store', dest='fname', help='filename to insert')
+   parser.add_argument('-l', action='store_const', dest='listCollections', const='True', help='list collections in the database')
 #   parser.add_argument('-a', action='store', dest='aws_access', help='AWS access code')
    parser.add_argument('-s', action='store', dest='aws_secret', help='path to data')
-   parser.add_argument('-f', action='store', dest='fname', help='filename to insert')
    parser.add_argument('-force', action='store_const', dest='force', const='True', help='force override')
    parser.add_argument('-i', action='store_const', dest='insert', const='True', help='Add records to the given dictionary.')
    parser.add_argument('-r', action='store_const', dest='recurse', const='True', help='recursively add JSON files to the dictionary')
@@ -542,6 +543,11 @@ def main():
    except:
       print "MDB: Unable to connect to database: "+args.dbase
       return -1
+
+   #print collection list if requested
+   if args.listCollections:
+      colls = mdb.getCollections()
+      print "Collections in "+args.dbase+": "+str(colls)
 #
 #   if args.aws_access:
 #      awsAccessKey = args.aws_access

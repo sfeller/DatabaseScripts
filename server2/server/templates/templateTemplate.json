@@ -1,6 +1,7 @@
 {
    "version":"0.1.0.0",
    "type":"template",
+   "name":"template",
    "key":"name",
    "collection":"templates",
    "fields": 
