@@ -117,9 +117,9 @@ class AquetiNamespace(BaseNamespace):
 #      except:
 #         print "Template does not exist for collection named "+data["collection"]
 
-      data["documents"] = mdb.query( data["collection"], data["query"] );
+      docs = mdb.query( data["collection"], data["query"] );
 
-      data = remove_Id(data["documents"])
+      data = convertIdToString(docs)
 
       print("Results: "+str(data))
       self.emit("documents", data)
@@ -328,13 +328,13 @@ def serve_file(environ, start_response):
 ############################################################
 # remove_Id
 ############################################################
-def remove_Id(data):
+def convertIdToString(data):
    print( str(data))
    for item in data:
       try:
-         del item["_id"]
+         item["_id"] = str(item["_id"])
       except: 
-         print "Key failure: "+str(item)
+         print "_id not found: "+str(item)
 
    return data
 

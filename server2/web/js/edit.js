@@ -412,6 +412,7 @@ var getTemplatesCallback = function(response, args)
       var queryElement = document.getElementById("Query");
       var qlist = parseInputTree(queryElement);
 
+      alert("Query: "+JSON.stringify(qlist));
       if( qlist["query"] == undefined ) {
          args.query = {};
       }
@@ -1089,8 +1090,8 @@ function genUL( template, item)
  * \brief Function to generate the input Form
  * 
  * \param [in] template reference template generating an input display
- * \param [in] item specific item with values to assign to the template fields. Optional
  * \param [in] key  key to assign to the the newly created element
+ * \param [in] item specific item with values to assign to the template fields. If item = "query", the output will be set up for quering the database
  *
  * This function autogenerates a query page from a the provided template. If an item is provided,
  * template paramters will be filled in with item values. The key determines the name of the new
@@ -1098,14 +1099,41 @@ function genUL( template, item)
  **/
 function genInput(template, key, item)
 {
+   var query = false;
+   if( key == "Query" ) {
+      query = true;
+   }
+
    //Create an li component
    var li = document.createElement("li");
    li.setAttribute("id",key);
 
    /////////////////////////////////////////////
+   //Generate a template UL (useful for a query)
+   /////////////////////////////////////////////
+   if(template["type"] == "template")
+   {
+      var ul2 = genUL(template["data"], item, key);
+      ul2.setAttribute("title",key);
+      ul2.setAttribute("id","template");
+      ul2.setAttribute("class","dict");
+
+      //Remove the data node. Leaving this in would make the template recursive
+      //This is the only difference between a template and a dictionary
+      var childInfo = utils.findChildById(ul2, "data");
+      utils.removeChildren(childInfo.element);
+      ul2.removeChild(childInfo.element);
+
+
+      var text = document.createTextNode(key);
+      li.appendChild(text);
+      li.appendChild(ul2);
+   }
+
+   /////////////////////////////////////////////
    //Generate a dictionary UL
    /////////////////////////////////////////////
-   if(template["type"] == "dictionary")
+   else if(template["type"] == "dictionary")
    {
       var ul2 = genUL(template["data"], item, key);
       ul2.setAttribute("title",key);
@@ -1115,6 +1143,17 @@ function genInput(template, key, item)
 
       li.appendChild(text);
       li.appendChild(ul2);
+
+      if((template["edit"] == undefined)||( template["edit"] == true )) {
+         //Create add button
+         var addButton = document.createElement("button");
+         var text = document.createTextNode("Add Object");
+         addButton.appendChild(text);
+         addButton.setAttribute("title",key);
+         addButton.setAttribute("id","addButton");
+
+         li.appendChild(addButton);
+      }
    }
 
    /////////////////////////////////////////////
@@ -1209,7 +1248,7 @@ function genInput(template, key, item)
       input.setAttribute("title",key);
 
       //check if readonly
-      if( template["edit"] == false)
+      if((query == false)&&(template["edit"] != undefined )&&( template["edit"] == false))
       {
          input.setAttribute("readonly",true);
          input.setAttribute("disable",true);

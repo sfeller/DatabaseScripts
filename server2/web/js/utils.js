@@ -33,6 +33,34 @@ var utils =
       }
    },
 
+
+   /**
+    * \brief Find the childe with the given name
+    * \return result.element is the element object, result.index is the element index
+    *       
+    **/
+   findChildById( element, id )
+   {
+      var result = {};
+      result["element"] = null;
+
+      
+//      var lstChildren = isSearchInnerDescendant ? Utils.getAllDescendant(element) : element.childNodes;
+      var lstChildren = element.children;
+
+      var index = 0;
+      for (var i = 0; i < lstChildren.length; i++)
+      {
+          if (lstChildren[i].id == id)
+          {
+             result.element = lstChildren[i];
+             result.index = i
+             break;
+          }
+      }
+      return result;
+   },
+
    /************************************************************
     * function to get a URL value
     ************************************************************/
