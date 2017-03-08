@@ -82,7 +82,6 @@ var db =
                 
       //Everything is ready. Emit data request. Call back should take results.
       //args should have collection, sort, and query
-      alert("getting documents:"+JSON.stringify(args["collection"])+",query:"+JSON.stringify(args["query"]));
       socket.emit("getDocuments", {"collection":args["collection"],"query":args["query"],"sort":args["sort"]});
    },
 

@@ -6,15 +6,12 @@
    "collection":"templates",
    "data": 
    {
-      "type":{"type":"string", "description":"type of record", "value":"template", "auto":true, "edit":false},
-      "name":{"type":"string", "description":"name of the template", "required":"true"},
-      "key":{"type":"string", "description":"specifies which field is used as they key"},
-      "version":{"type":"string", "description":"indicates the version of the template"},
+      "type":{"type":"string", "description":"type of record", "value":"template", "auto":true, "edit":false, "value":"dictionary"},
+      "name":{"type":"string","required": true, "description":"name of the template", "required":"true"},
+      "key":{"type":"string", "required": true, "description":"specifies which field is used as they key"},
+      "version":{"type":"string", "required":true, "description":"indicates the version of the template"},
       "timestamp":{"type":"string", "format":"YYYYMMDD_hh:mm:ss", "auto":true, "edit":false, "description":"date and time when the record was created"},
-      "collection":{"type":"string", "description":"Name of the collection the template references."},
-      "data": { "type":"dictionary", "description":"defined fields within the template", "required":true,
-         "data": {
-         }
-      }
+      "collection":{"type":"string", "required": true, "description":"Name of the collection the template references."},
+      "data": { "type":"dictionary", "description":"defined fields within the template", "required":true}
    }
 }

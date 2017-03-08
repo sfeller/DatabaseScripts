@@ -357,6 +357,12 @@ var getTemplatesCallback = function(response, args)
    //Get the main element
    var mainDiv = document.getElementById("mainDiv");
 
+   var h2 = document.createElement("h2");
+   var text = document.createTextNode("Query");
+   h2.appendChild(text);
+   mainDiv.appendChild(h2);
+   
+
    //Create select box at top
    var templateDiv = document.createElement("div");
    templateDiv.setAttribute("id","templateDiv");
@@ -379,10 +385,6 @@ var getTemplatesCallback = function(response, args)
    templateDiv.appendChild(document.createTextNode("Template Version: "));
    templateDiv.appendChild(versionSelect);
 
-   var h2 = document.createElement("h2");
-   h2.appendChild(document.createTextNode("Query"));
-   mainDiv.appendChild(h2);
-
    //Create the submit button for a query now. This will be displayed after the version is selected
    var queryButton = genSubmitButton("Submit Query");
 
@@ -395,7 +397,7 @@ var getTemplatesCallback = function(response, args)
       var index = $("#templateVersionDropDown option:selected").index();
       args["templateIndex"] = index;
 
-      var li = genInput(args["templates"][index], "QueryList" );
+      var li = genInput(args["templates"][index], "Query" );
       mainDiv.appendChild(li);
       mainDiv.appendChild(queryButton);
    });
@@ -407,17 +409,16 @@ var getTemplatesCallback = function(response, args)
    $(queryButton).click( function() 
    {
       //Get query data
-      var queryElement = document.getElementById("QueryList");
+      var queryElement = document.getElementById("Query");
       var qlist = parseInputTree(queryElement);
 
-      if( qlist["queryList"] == undefined ) {
+      if( qlist["query"] == undefined ) {
          args.query = {};
       }
       else {
-         args.query = qlist["QueryList"];
+         args.query = qlist["Query"];
       }
 
-      alert("ARGS:"+JSON.stringify(args));
       //submit data request
       db.getDocuments( args, documentListCallback );
    });
@@ -437,10 +438,21 @@ var documentListCallback= function( response, args )
    //Get the main element
    var mainDiv = document.getElementById("mainDiv");
 
+   var h2 = document.createElement("h2");
+   var text = document.createTextNode("Query Results");
+   h2.appendChild(text);
+   mainDiv.appendChild(h2);
+   var h3 = document.createElement("h3");
+   text = document.createTextNode("Items found: "+JSON.stringify(args["documents"].length));
+   h3.appendChild(text);
+   mainDiv.appendChild(h3);
+ 
    var index = args["documents"].length-1;
    var template =  args["templates"][args["templateIndex"]];
    //Generate a list from the first one
    var li = genInput( template, template["key"], args["documents"][index]);
+
+   
 
    mainDiv.appendChild(li);
 }
